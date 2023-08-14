@@ -23,3 +23,6 @@ go.work
 # Emacs backup files
 *\#
 *\~
+
+# Dustmound source files
+*.dm
