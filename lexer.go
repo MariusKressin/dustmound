@@ -59,6 +59,13 @@ func main() {
             break
           }
 				}
+				if token == "t" || token == "f" {
+					wordType = "boolean"
+				} else if token == "nil" {
+					wordType = "nil"
+				} else if token == "undef" {
+					wordType = "undef"
+				}
 
 				inside = inside[:len(inside)-1]
 				tokens = append(tokens, Token{
