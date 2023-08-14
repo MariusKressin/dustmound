@@ -3,9 +3,24 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"os"
 )
 
 func main() {
+	if len(os.Args) < 2 {
+    fmt.Println("Usage: go run main.go <file>")
+    os.Exit(1)
+  }
+
+  file, err := os.ReadFile(os.Args[1])
+  if err != nil {
+    fmt.Println(err)
+    os.Exit(1)
+  }
+
+	// Variable for storing code
+	var code = string(file)
+
 	// Variables for storing token-related information
 	var inside = []string{ "env" } // Current scope
 	var tokens []Token // List of tokens
