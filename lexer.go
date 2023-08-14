@@ -27,6 +27,9 @@ func main() {
 		"semi_line",
 	}
 
+	// Variable for storing keyword names
+	var keywords = []string{} // Empty for now
+
 	// Variables for storing token-related information
 	var inside = []Token{} // Current scope
 	var tokens []Token // List of tokens
@@ -51,11 +54,17 @@ func main() {
 		} else if inside[len(inside)-1].Type == "word" { // End/Continue word
 			if wordchar.MatchString(string(c)) {
 				token += string(c)
-      } else { // End word, and figure out whether it's a keyword or a function.
-				var wordType = "keyword" // Default to keyword
+      } else { // End word, and figure out what the type is
+				var wordType = "identifier" // Default to identifier
 				for i := range(commands) { // Iterate over commands and check if the current token matches it.
 					if token == commands[i] {
             wordType = "command" // If the token matches a command, set the word type to command.
+            break
+          }
+				}
+				for i := range(keywords) { // Do the same thing with keywords
+					if token == keywords[i] {
+            wordType = "keyword"
             break
           }
 				}
