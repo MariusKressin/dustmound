@@ -28,7 +28,24 @@ func main() {
 	}
 
 	// Variable for storing keyword names
-	var keywords = []string{} // Empty for now
+	var keywords = []string{
+		"set",
+		"if",
+		"then",
+		"else",
+		"end",
+		"while",
+		"until",
+		"do",
+		"for",
+		"break",
+    "continue",
+		"com",
+		"command",
+		"out",
+		"in",
+		"to",
+	} // Empty for now
 
 	// Variables for storing token-related information
 	var inside = []Token{} // Current scope
