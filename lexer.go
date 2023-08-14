@@ -21,6 +21,12 @@ func main() {
 	// Variable for storing code
 	var code = string(file)
 
+	// Variable for storing command names
+	var commands = []string{
+		"line",
+		"semi_line",
+	}
+
 	// Variables for storing token-related information
 	var inside = []Token{} // Current scope
 	var tokens []Token // List of tokens
@@ -42,13 +48,21 @@ func main() {
 		// Begin tokens
 		if inside[len(inside)-1].Type == "env" {
 			token, inside = BeginToken(string(c), inside, currentTokenID)
-		} else if inside[len(inside)-1].Type == "keyword" { // End/Continue keyword
+		} else if inside[len(inside)-1].Type == "word" { // End/Continue word
 			if wordchar.MatchString(string(c)) {
 				token += string(c)
-      } else {
+      } else { // End word, and figure out whether it's a keyword or a function.
+				var wordType = "keyword" // Default to keyword
+				for i := range(commands) { // Iterate over commands and check if the current token matches it.
+					if token == commands[i] {
+            wordType = "command" // If the token matches a command, set the word type to command.
+            break
+          }
+				}
+
 				inside = inside[:len(inside)-1]
 				tokens = append(tokens, Token{
-					Type: "keyword",
+					Type: wordType,
 					Value: token,
 					ID: currentTokenID,
 					BelongsTo: inside[len(inside)-1].ID,

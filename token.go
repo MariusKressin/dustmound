@@ -16,7 +16,7 @@ func BeginToken(char string, inside []Token, id int) (string, []Token) {
 	if wordchar.MatchString(char) {
 		token = char
 		inside = append(inside, Token{
-			Type: "keyword",
+			Type: "word",
 			Value: "",
 			ID: id,
 			BelongsTo: inside[len(inside) - 1].ID,
