@@ -126,9 +126,15 @@ func main() {
 			}
 		} else if inside[len(inside)-1].Type == "list" {
 			if string(c) == ")" {
+				var listValue string
+				for _, t := range(tokens) {
+					if t.BelongsTo == inside[len(inside)-1].ID {
+						listValue += " " + t.Value
+					}
+				}
         tokens = append(tokens, Token{
           Type: "list",
-          Value: "",
+          Value: "("+listValue+" )",
           ID: inside[len(inside)-1].ID,
           BelongsTo: inside[len(inside)-2].ID,
         })
