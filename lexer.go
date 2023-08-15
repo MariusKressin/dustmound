@@ -100,10 +100,11 @@ func main() {
 	var currentTokenID int = 1 // Next token ID
 
 	// Regexps
-	var wordchar = regexp.MustCompile("[a-zA-Z_0-9]")             // Regexp for word character
-	var stringdelimiter = regexp.MustCompile("^[\"'`]$")          // Regexp for string delimiter
-	var number = regexp.MustCompile("^[0-9]+$")                   // Regexp for number
-	var operator = regexp.MustCompile("[\\+\\-\\=\\!\\<\\>\\*/\\&\\|%\\.]") // Regexp for number
+	var wordchar = regexp.MustCompile("[a-zA-Z_0-9\\.]")                    // Regexp for word character
+	var stringdelimiter = regexp.MustCompile("^[\"'`]$")                    // Regexp for string delimiter
+	var intRegexp = regexp.MustCompile("^[0-9]+$")                          // Regexp for int
+	var floatRegexp = regexp.MustCompile("^[0-9]+\\.[0-9]+$")               // Regexp for float
+	var operator = regexp.MustCompile("[\\+\\-\\=\\!\\<\\>\\*/\\&\\|%\\.]") // Regexp for operator
 
 	inside = append(inside, Token{
 		Type:      "env",
@@ -151,8 +152,10 @@ func main() {
 					wordType = "nil"
 				} else if token == "undef" {
 					wordType = "undef"
-				} else if number.MatchString(token) {
-					wordType = "number"
+				} else if intRegexp.MatchString(token) {
+					wordType = "int"
+				} else if floatRegexp.MatchString(token) {
+					wordType = "float"
 				}
 
 				inside = inside[:len(inside)-1]
