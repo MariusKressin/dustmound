@@ -55,8 +55,9 @@ func main() {
 	var currentTokenID int = 1 // Next token ID
 
 	// Regexps
-	var wordchar = regexp.MustCompile("[a-zA-Z_]") // Regexp for word character
+	var wordchar = regexp.MustCompile("[a-zA-Z_0-9]") // Regexp for word character
 	var stringdelimiter = regexp.MustCompile("^[\"'`]$") // Regexp for string delimiter
+	var number = regexp.MustCompile("^[0-9]+$") // Regexp for number
 
 	inside = append(inside, Token{
 		Type: "env",
@@ -92,15 +93,19 @@ func main() {
 					wordType = "nil"
 				} else if token == "undef" {
 					wordType = "undef"
+				} else if number.MatchString(token) {
+					wordType = "number"
 				}
 
 				inside = inside[:len(inside)-1]
+
 				tokens = append(tokens, Token{
 					Type: wordType,
 					Value: token,
 					ID: currentTokenID,
 					BelongsTo: inside[len(inside)-1].ID,
 				})
+
 				currentTokenID ++
 				token, inside, currentTokenID = BeginToken(string(c), inside, currentTokenID, -1)
       }
