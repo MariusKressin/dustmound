@@ -124,7 +124,27 @@ func main() {
 				})
 
 				currentTokenID++
-				token, inside, currentTokenID = BeginToken(string(c), inside, currentTokenID, -1)
+				var nextTokenBelongsTo = -1
+				if wordType == "command" {
+					nextTokenBelongsTo = currentTokenID - 1
+				}
+				if string(c) == ")" {
+					var listValue string
+					for _, t := range tokens {
+						if t.BelongsTo == inside[len(inside)-1].ID {
+							listValue += " " + t.Value
+						}
+					}
+					tokens = append(tokens, Token{
+						Type:      "list",
+						Value:     "(" + listValue + " )",
+						ID:        inside[len(inside)-1].ID,
+						BelongsTo: inside[len(inside)-1].BelongsTo,
+					})
+					inside = inside[:len(inside)-1]
+				} else {
+					token, inside, currentTokenID = BeginToken(string(c), inside, currentTokenID, nextTokenBelongsTo)
+				}
 			}
 		} else if stringdelimiter.MatchString(inside[len(inside)-1].Type) { // End/Continue string
 			if string(c) == inside[len(inside)-1].Type {
@@ -153,7 +173,7 @@ func main() {
 					Type:      "list",
 					Value:     "(" + listValue + " )",
 					ID:        inside[len(inside)-1].ID,
-					BelongsTo: inside[len(inside)-2].ID,
+					BelongsTo: inside[len(inside)-1].BelongsTo,
 				})
 				inside = inside[:len(inside)-1]
 			} else {
