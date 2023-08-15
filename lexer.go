@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"os"
 )
 
@@ -45,7 +46,7 @@ func main() {
 		"out",
 		"in",
 		"to",
-	} // Empty for now
+	}
 
 	// Variables for storing token-related information
 	var inside = []Token{} // Current scope
@@ -67,7 +68,7 @@ func main() {
 	for _, c := range code {
 		// Begin tokens
 		if inside[len(inside)-1].Type == "env" {
-			token, inside = BeginToken(string(c), inside, currentTokenID)
+			token, inside, currentTokenID = BeginToken(string(c), inside, currentTokenID, -1)
 		} else if inside[len(inside)-1].Type == "word" { // End/Continue word
 			if wordchar.MatchString(string(c)) {
 				token += string(c)
@@ -101,7 +102,7 @@ func main() {
 					BelongsTo: inside[len(inside)-1].ID,
 				})
 				currentTokenID ++
-				token, inside = BeginToken(string(c), inside, currentTokenID)
+				token, inside, currentTokenID = BeginToken(string(c), inside, currentTokenID, -1)
       }
 		} else if stringdelimiter.MatchString(inside[len(inside)-1].Type) { // End/Continue string
 			if string(c) == inside[len(inside)-1].Type {
@@ -118,8 +119,25 @@ func main() {
 			} else {
 				token += string(c)
 			}
+		} else if inside[len(inside)-1].Type == "list" {
+			if string(c) == ")" {
+        tokens = append(tokens, Token{
+          Type: "list",
+          Value: "",
+          ID: inside[len(inside)-1].ID,
+          BelongsTo: inside[len(inside)-2].ID,
+        })
+				inside = inside[:len(inside)-1]
+			} else {
+				token, inside, currentTokenID = BeginToken(string(c), inside, currentTokenID, -1)
+			}
 		}
 	}
+
+	// Sort the tokens by id
+	sort.Slice(tokens, func(i, j int) bool {
+    return tokens[i].ID < tokens[j].ID
+	})
 
 	// Output tokens in a formatted list
 	for _, t := range tokens {
