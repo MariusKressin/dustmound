@@ -48,6 +48,17 @@ func main() {
 		"to",
 	}
 
+	// Variable for storing data types
+	var datatypes = []string{
+		"int",
+		"float",
+		"string",
+		"bool",
+		"Command",
+		"list",
+		"block",
+	}
+
 	// Variables for storing token-related information
 	var inside = []Token{}     // Current scope
 	var tokens []Token         // List of tokens
@@ -84,6 +95,12 @@ func main() {
 				for i := range keywords { // Do the same thing with keywords
 					if token == keywords[i] {
 						wordType = "keyword"
+						break
+					}
+				}
+				for i := range datatypes { // And datatypes
+					if token == datatypes[i] {
+						wordType = "datatype"
 						break
 					}
 				}
