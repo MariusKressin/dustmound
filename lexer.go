@@ -59,6 +59,40 @@ func main() {
 		"block",
 	}
 
+	// Variable for storing operators
+	var operators = []string{
+		"+",  // Plus
+		"-",  // Minus
+		"*",  // Times
+		"/",  // Divided by
+		"^",  // To the power of
+		"%",  // Modulus
+		":",  // Child block a:b is the equivalent of a.b in Go.
+		">",  // Greater than
+		"<",  // Less than
+		">=", // Greater than or equal to
+		"<=", // Less than or equal to
+		"=",  // Equal to
+		"!=", // Not equal to
+		"!",  // Not
+		"||", // XOR
+		"|",  // OR
+		"!|", // NOR
+		"&",  // AND
+		"!&", // NAND
+		"**", // Wild card e.g. a ** b returns true if a contains b
+		"is",
+		"not",
+		"and",
+		"or",
+		"any",
+		"ge",
+		"le",
+		"eq",
+		"lt",
+		"gt",
+	}
+
 	// Variables for storing token-related information
 	var inside = []Token{}     // Current scope
 	var tokens []Token         // List of tokens
@@ -66,9 +100,10 @@ func main() {
 	var currentTokenID int = 1 // Next token ID
 
 	// Regexps
-	var wordchar = regexp.MustCompile("[a-zA-Z_0-9]")    // Regexp for word character
-	var stringdelimiter = regexp.MustCompile("^[\"'`]$") // Regexp for string delimiter
-	var number = regexp.MustCompile("^[0-9]+$")          // Regexp for number
+	var wordchar = regexp.MustCompile("[a-zA-Z_0-9]")             // Regexp for word character
+	var stringdelimiter = regexp.MustCompile("^[\"'`]$")          // Regexp for string delimiter
+	var number = regexp.MustCompile("^[0-9]+$")                   // Regexp for number
+	var operator = regexp.MustCompile("[\\+\\-\\=\\!\\<\\>\\*/\\&\\|%\\.]") // Regexp for number
 
 	inside = append(inside, Token{
 		Type:      "env",
@@ -101,6 +136,12 @@ func main() {
 				for i := range datatypes { // And datatypes
 					if token == datatypes[i] {
 						wordType = "datatype"
+						break
+					}
+				}
+				for i := range operators { // And word-based operators
+					if token == operators[i] {
+						wordType = "operator"
 						break
 					}
 				}
@@ -178,6 +219,37 @@ func main() {
 				inside = inside[:len(inside)-1]
 			} else {
 				token, inside, currentTokenID = BeginToken(string(c), inside, currentTokenID, -1)
+			}
+		} else if inside[len(inside)-1].Type == "operator" {
+			if operator.MatchString(string(c)) {
+				token += string(c)
+			} else {
+				inside = inside[:len(inside)-1]
+				tokens = append(tokens, Token{
+					Type:      "operator",
+					Value:     token,
+					ID:        currentTokenID,
+					BelongsTo: inside[len(inside)-1].ID,
+				})
+
+				currentTokenID++
+				if string(c) == ")" {
+					var listValue string
+					for _, t := range tokens {
+						if t.BelongsTo == inside[len(inside)-1].ID {
+							listValue += " " + t.Value
+						}
+					}
+					tokens = append(tokens, Token{
+						Type:      "list",
+						Value:     "(" + listValue + " )",
+						ID:        inside[len(inside)-1].ID,
+						BelongsTo: inside[len(inside)-1].BelongsTo,
+					})
+					inside = inside[:len(inside)-1]
+				} else {
+					token, inside, currentTokenID = BeginToken(string(c), inside, currentTokenID, -1)
+				}
 			}
 		}
 	}
