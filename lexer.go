@@ -146,6 +146,6 @@ func main() {
 
 	// Output tokens in a formatted list
 	for _, t := range tokens {
-    fmt.Printf("\033[31m%d\033[97m: \033[32m%s\033[37m %s\033[0m -- %d\n", t.ID, t.Type, t.Value, t.BelongsTo)
+    fmt.Printf("\033[31m%-3d\033[97m>> %-3d \033[32m%-11s\033[37m%s\033[0m\n", t.ID, t.BelongsTo, t.Type, t.Value)
   }
 }
