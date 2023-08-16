@@ -1,3 +1,3 @@
-module github.com/MariusKressin/dustmound
+module github.com/mariuskressin/dustmound
 
 go 1.19
