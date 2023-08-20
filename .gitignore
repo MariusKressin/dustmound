@@ -25,4 +25,4 @@ go.work
 *\~
 
 # Dustmound source files
-*.dm
+*.dt
