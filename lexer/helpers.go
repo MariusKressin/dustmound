@@ -39,6 +39,14 @@ func BeginToken(char string, belongsTo int) {
 			ID: CurrentTokenID,
 			BelongsTo: belongsToID,
 		})
+	} else if char == "#" {
+		CurrentToken = ""
+		Inside = append(Inside, Token{
+			Type: "comment",
+			Value: char,
+			ID: -2,
+			BelongsTo: -2,
+		})
 	}
 }
 

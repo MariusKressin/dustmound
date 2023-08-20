@@ -55,6 +55,10 @@ func Init() {
 					BeginToken(string(c), -1)
 				}
 			}
+		} else if Inside[len(Inside)-1].Type == "comment" {
+			if string(c) == "\n" {
+				Inside = Inside[:len(Inside)-1]
+			}
 		}
 	}
 
