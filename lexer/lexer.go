@@ -1,14 +1,13 @@
 package lexer
 
 import (
-	"fmt"
 	"sort"
 
 	"github.com/mariuskressin/dustmound/globals"
 )
 
-func Init() {
-	Inside = append(Inside, Token{
+func Tokenize() []globals.Token {
+	Inside = append(Inside, globals.Token{
 		Type:      "env",
 		Value:     "env",
 		ID:        0,
@@ -67,8 +66,5 @@ func Init() {
 		return Tokens[i].ID < Tokens[j].ID
 	})
 
-	// Output tokens in a formatted list
-	for _, t := range Tokens {
-		fmt.Printf("\033[33m%-3d\033[0m: %-3d \033[32m%-11s\033[37m%s\033[0m\n", t.ID, t.BelongsTo, t.Type, t.Value)
-	}
+	return Tokens
 }

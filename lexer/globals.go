@@ -1,12 +1,16 @@
 package lexer
 
-import "regexp"
+import (
+	"regexp"
+
+	"github.com/mariuskressin/dustmound/globals"
+)
 
 // Variables for storing token-related information
-var Inside = []Token{}     // Current scope
-var Tokens []Token         // List of tokens
-var CurrentToken string    // Current token
-var CurrentTokenID int = 1 // Next token ID
+var Inside = []globals.Token{} // Current scope
+var Tokens []globals.Token     // List of tokens
+var CurrentToken string        // Current token
+var CurrentTokenID int = 1     // Next token ID
 
 // Regexps
 var WordChar = regexp.MustCompile("[a-zA-Z_0-9\\.]")                    // Regexp for word character

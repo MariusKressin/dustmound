@@ -8,7 +8,7 @@ func BeginToken(char string, belongsTo int) {
 	var belongsToID = or(belongsTo, Inside[len(Inside)-1].ID)
 	if WordChar.MatchString(char) {
 		CurrentToken = char
-		Inside = append(Inside, Token{
+		Inside = append(Inside, globals.Token{
 			Type: "word",
 			Value: "",
 			ID: CurrentTokenID,
@@ -16,7 +16,7 @@ func BeginToken(char string, belongsTo int) {
 		})
 	} else if StringDelimiter.MatchString(char) {
 		CurrentToken = char
-		Inside = append(Inside, Token{
+		Inside = append(Inside, globals.Token{
 			Type: char,
 			Value: "",
 			ID: CurrentTokenID,
@@ -24,7 +24,7 @@ func BeginToken(char string, belongsTo int) {
 		})
 	} else if char == "(" {
 		CurrentToken = ""
-    Inside = append(Inside, Token{
+    Inside = append(Inside, globals.Token{
       Type: "list",
       Value: "",
       ID: CurrentTokenID,
@@ -33,7 +33,7 @@ func BeginToken(char string, belongsTo int) {
 		CurrentTokenID ++
 	} else if Operator.MatchString(char) {
 		CurrentToken = char
-		Inside = append(Inside, Token{
+		Inside = append(Inside, globals.Token{
 			Type: "operator",
 			Value: char,
 			ID: CurrentTokenID,
@@ -41,7 +41,7 @@ func BeginToken(char string, belongsTo int) {
 		})
 	} else if char == "#" {
 		CurrentToken = ""
-		Inside = append(Inside, Token{
+		Inside = append(Inside, globals.Token{
 			Type: "comment",
 			Value: char,
 			ID: -2,
@@ -110,7 +110,7 @@ func CreateToken(tokenType string) int {
 		id = Inside[len(Inside)-1].ID
 		belongsTo = Inside[len(Inside)-1].BelongsTo
 	}
-	Tokens = append(Tokens, Token{
+	Tokens = append(Tokens, globals.Token{
 		Type:      tokenType,
 		Value:     value,
 		ID:        id,
