@@ -14,18 +14,23 @@ func Tokenize() []globals.Token {
 		BelongsTo: -1,
 	})
 
+	var nextTokenBelongsTo = -1
+
 	for _, c := range globals.Code {
 		// Begin tokens
 		if Inside[len(Inside)-1].Type == "env" {
-			BeginToken(string(c), -1)
+			BeginToken(string(c), nextTokenBelongsTo)
 		} else if Inside[len(Inside)-1].Type == "word" { // End/Continue word
 			if WordChar.MatchString(string(c)) {
 				CurrentToken += string(c)
 			} else { // End word, and figure out what the type is
 				var wordType = DetectWordType()
-				var nextTokenBelongsTo = CreateToken(wordType)
-				if string(c) == ")" {
+				nextTokenBelongsTo = CreateToken(wordType)
+				if WhiteSpace.MatchString(string(c)) {
+					continue
+				} else if string(c) == ")" {
 					CreateToken("list")
+					nextTokenBelongsTo = -1
 				} else {
 					BeginToken(string(c), nextTokenBelongsTo)
 				}
@@ -34,24 +39,27 @@ func Tokenize() []globals.Token {
 			if string(c) == Inside[len(Inside)-1].Type {
 				CurrentToken += string(c)
 				CreateToken("string")
+				nextTokenBelongsTo = -1
 			} else {
 				CurrentToken += string(c)
 			}
 		} else if Inside[len(Inside)-1].Type == "list" {
 			if string(c) == ")" {
 				CreateToken("list")
+				nextTokenBelongsTo = -1
 			} else {
-				BeginToken(string(c), -1)
+				BeginToken(string(c), nextTokenBelongsTo)
 			}
 		} else if Inside[len(Inside)-1].Type == "operator" {
 			if Operator.MatchString(string(c)) {
 				CurrentToken += string(c)
 			} else {
 				CreateToken("operator")
+				nextTokenBelongsTo = -1
 				if string(c) == ")" {
 					CreateToken("list")
 				} else {
-					BeginToken(string(c), -1)
+					BeginToken(string(c), nextTokenBelongsTo)
 				}
 			}
 		} else if Inside[len(Inside)-1].Type == "comment" {
