@@ -37,7 +37,6 @@ func Tokenize() []globals.Token {
 			}
 		} else if StringDelimiter.MatchString(Inside[len(Inside)-1].Type) { // End/Continue string
 			if string(c) == Inside[len(Inside)-1].Type {
-				CurrentToken += string(c)
 				CreateToken("string")
 				nextTokenBelongsTo = -1
 			} else {

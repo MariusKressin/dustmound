@@ -9,51 +9,50 @@ func BeginToken(char string, belongsTo int) {
 	if WordChar.MatchString(char) {
 		CurrentToken = char
 		Inside = append(Inside, globals.Token{
-			Type: "word",
-			Value: "",
-			ID: CurrentTokenID,
+			Type:      "word",
+			Value:     "",
+			ID:        CurrentTokenID,
 			BelongsTo: belongsToID,
 		})
 	} else if StringDelimiter.MatchString(char) {
-		CurrentToken = char
+		CurrentToken = ""
 		Inside = append(Inside, globals.Token{
-			Type: char,
-			Value: "",
-			ID: CurrentTokenID,
+			Type:      char,
+			Value:     "",
+			ID:        CurrentTokenID,
 			BelongsTo: belongsToID,
 		})
 	} else if char == "(" {
 		CurrentToken = ""
-    Inside = append(Inside, globals.Token{
-      Type: "list",
-      Value: "",
-      ID: CurrentTokenID,
-      BelongsTo: belongsToID,
-    })
-		CurrentTokenID ++
+		Inside = append(Inside, globals.Token{
+			Type:      "list",
+			Value:     "",
+			ID:        CurrentTokenID,
+			BelongsTo: belongsToID,
+		})
+		CurrentTokenID++
 	} else if Operator.MatchString(char) {
 		CurrentToken = char
 		Inside = append(Inside, globals.Token{
-			Type: "operator",
-			Value: char,
-			ID: CurrentTokenID,
+			Type:      "operator",
+			Value:     char,
+			ID:        CurrentTokenID,
 			BelongsTo: belongsToID,
 		})
 	} else if char == "#" {
 		CurrentToken = ""
 		Inside = append(Inside, globals.Token{
-			Type: "comment",
-			Value: char,
-			ID: -2,
+			Type:      "comment",
+			Value:     char,
+			ID:        -2,
 			BelongsTo: -2,
 		})
 	}
 }
 
-
 func DetectWordType() string {
-	var wordType = "identifier" // Default to identifier
-	for i := range globals.Commands {   // Iterate over commands and check if the current token matches it.
+	var wordType = "identifier"       // Default to identifier
+	for i := range globals.Commands { // Iterate over commands and check if the current token matches it.
 		if CurrentToken == globals.Commands[i] {
 			wordType = "command" // If the token matches a command, set the word type to command.
 			break
@@ -128,7 +127,7 @@ func CreateToken(tokenType string) int {
 	return nextTokenBelongsTo
 }
 
-func or (first int, second int) int {
+func or(first int, second int) int {
 	if first == -1 {
 		return second
 	} else {

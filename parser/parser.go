@@ -1,14 +1,66 @@
 package parser
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/mariuskressin/dustmound/globals"
 )
 
-func ParseTokens (tokens []globals.Token) {
-	// Output tokens in a formatted list
+var MaxID = 0
+
+func ParseTokens(tokens []globals.Token) {
+	// Loop over the tokens
 	for _, t := range tokens {
-		fmt.Printf("\033[33m%-3d\033[0m: %-3d \033[32m%-11s\033[37m%s\033[0m\n", t.ID, t.BelongsTo, t.Type, t.Value)
+		if t.Type == "command" {
+			if t.BelongsTo != 0 {
+				for _, c := range Commands {
+					if c.ArgsID == t.BelongsTo {
+						c.Args = append(c.Args, globals.Argument{
+							Type:  "eval",
+							Value: strconv.Itoa(t.ID),
+						})
+					}
+				}
+			}
+			Commands = append(Commands, &globals.Command{
+				Name:   t.Value,
+				ID:     t.ID,
+				Args:   make([]globals.Argument, 0),
+				ArgsID: 0,
+				PassTo: globals.Location{
+					ID:    t.BelongsTo,
+					Index: 0,
+				},
+			})
+		} else if t.Type == "keyword" {
+			// Do some other stuff depending on the keyword.
+		} else if t.Type == "list" {
+			if t.BelongsTo != 0 {
+				Arglists = append(Arglists, &globals.Arglist{
+					Args: make([]string, 0),
+					ID:   t.ID,
+				})
+				for _, c := range Commands {
+					if c.ID == t.BelongsTo {
+						c.ArgsID = t.ID
+					}
+				}
+			}
+		} else {
+			if t.BelongsTo != 0 {
+				for _, c := range Commands {
+					if c.ArgsID == t.BelongsTo {
+						c.Args = append(c.Args, globals.Argument{
+							Type:  t.Type,
+							Value: t.Value,
+						})
+					}
+				}
+			}
+		}
+	}
+
+	for _, c := range Commands {
+		Eval(*c.Expr())
 	}
 }
