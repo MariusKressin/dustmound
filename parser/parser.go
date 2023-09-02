@@ -61,6 +61,8 @@ func ParseTokens(tokens []globals.Token) {
 	}
 
 	for _, c := range Commands {
-		Eval(*c.Expr())
+		if c.PassTo.ID == 0 {
+			Eval(*c.Expr())
+		}
 	}
 }

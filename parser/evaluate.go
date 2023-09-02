@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/mariuskressin/dustmound/globals"
 )
@@ -11,9 +12,20 @@ func Eval(e globals.Expression) any {
 		if e.Name == "line" {
 			var stringArgs = ""
 			for _, a := range e.Args {
-				var evaluated = Eval(a.Expr())
+				var expression = a.Expr()
+				var evaluated any
+				if expression.Type == "eval" {
+					for _, c := range Commands {
+						if strconv.Itoa(c.ID) == expression.Name {
+							evaluated = Eval(*c.Expr())
+						}
+					}
+				}
 				if evaluated == nil {
-					continue
+					evaluated = Eval(expression)
+					if evaluated == nil {
+						continue
+					}
 				}
 				stringArgs += fmt.Sprintf("%s ", evaluated)
 			}
