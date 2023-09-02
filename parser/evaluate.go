@@ -19,6 +19,17 @@ func Eval(e globals.Expression) any {
 			}
 			fmt.Printf("%v\n", stringArgs)
 			return fmt.Sprintf("%v", stringArgs)
+		} else if e.Name == "semi_line" {
+			var stringArgs = ""
+			for _, a := range e.Args {
+				var evaluated = Eval(a.Expr())
+				if evaluated == nil {
+					continue
+				}
+				stringArgs += fmt.Sprintf("%s ", evaluated)
+			}
+			fmt.Printf("%v", stringArgs)
+			return fmt.Sprintf("%v", stringArgs)
 		}
 	} else if e.Type == "string" || e.Type == "int" || e.Type == "float" {
 		return e.Name
