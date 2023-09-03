@@ -4,23 +4,26 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"strings"
 
 	"github.com/mariuskressin/dustmound/globals"
 )
 
 func Eval(e globals.Expression) globals.Argument {
 	if e.Type == "command" {
+		var args = CompressArgs(e)
 		if e.Name == "line" {
-			var stringArgs = make([]string, 0)
-			var args = CompressArgs(e)
-			for _, a := range args {
-				stringArgs = append(stringArgs, fmt.Sprintf("%s", a.Value))
+			for i, a := range args {
+				if i != 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(a.Value)
 			}
-			fmt.Println(strings.Join(stringArgs, " "))
+			fmt.Print("\n")
 		} else if e.Name == "semi_line" {
-			var args = CompressArgs(e)
-			for _, a := range args {
+			for i, a := range args {
+				if i != 0 {
+					fmt.Print(" ")
+				}
 				fmt.Print(a.Value)
 			}
 		}
