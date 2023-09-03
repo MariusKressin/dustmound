@@ -8,7 +8,7 @@ import (
 
 var MaxID = 0
 
-func ParseTokens(tokens []globals.Token) {
+func ParseTokens(tokens []globals.Token) []*globals.Command {
 	// Loop over the tokens
 	for _, t := range tokens {
 		if t.Type == "command" {
@@ -60,9 +60,5 @@ func ParseTokens(tokens []globals.Token) {
 		}
 	}
 
-	for _, c := range Commands {
-		if c.PassTo.ID == 0 {
-			Eval(*c.Expr())
-		}
-	}
+	return Commands
 }
