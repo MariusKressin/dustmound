@@ -15,6 +15,7 @@ func Tokenize() []globals.Token {
 	})
 
 	var nextTokenBelongsTo = -1
+	var escaping = false
 
 	for _, c := range globals.Code {
 		// Begin tokens
@@ -36,9 +37,28 @@ func Tokenize() []globals.Token {
 				}
 			}
 		} else if StringDelimiter.MatchString(Inside[len(Inside)-1].Type) { // End/Continue string
-			if string(c) == Inside[len(Inside)-1].Type {
+			if escaping == true {
+				if c == 'n' {
+					CurrentToken += "\n"
+				} else if c == 't' {
+					CurrentToken += "\t"
+				} else if c == 'r' {
+					CurrentToken += "\r"
+				} else if c == '\'' {
+					CurrentToken += "'"
+				} else if c == '"' {
+					CurrentToken += "\""
+				} else if c == '`' {
+					CurrentToken += "`"
+				} else if c == '\\' {
+					CurrentToken += "\\"
+				}
+				escaping = false
+			} else if string(c) == Inside[len(Inside)-1].Type {
 				CreateToken("string")
 				nextTokenBelongsTo = -1
+			} else if c == '\\' {
+				escaping = true
 			} else {
 				CurrentToken += string(c)
 			}
