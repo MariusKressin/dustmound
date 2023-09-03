@@ -7,6 +7,7 @@ import (
 )
 
 var MaxID = 0
+var BlockLevel = 0
 
 func ParseTokens(tokens []globals.Token) []*globals.Command {
 	// Loop over the tokens
@@ -34,6 +35,12 @@ func ParseTokens(tokens []globals.Token) []*globals.Command {
 			})
 		} else if t.Type == "keyword" {
 			// Do some other stuff depending on the keyword.
+			if t.Value == "end" {
+				BlockLevel--
+				if BlockLevel < 0 {
+					panic("Unexpeced \"end\"!")
+				}
+			}
 		} else if t.Type == "list" {
 			if t.BelongsTo != 0 {
 				Arglists = append(Arglists, &globals.Arglist{
