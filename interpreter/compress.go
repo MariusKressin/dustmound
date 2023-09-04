@@ -37,11 +37,41 @@ func CompressArgs(e globals.Expression, condition bool) []globals.Argument {
 		}
 		evalArgs = append(evalArgs, evaluated)
 	}
-	i := 0
+	i := len(evalArgs) - 1
+	for { // The "not" operator must be handled seperately, because it acts on the following value and can be chained (!!x)
+		o := evalArgs[i]
+		if o.Type == "operator" && (o.Value == "!" || o.Value == "!!") {
+			if i != len(evalArgs)-1 {
+				newBool := "t"
+				if ToBool(evalArgs[i+1]) && o.Value == "!" {
+					newBool = "f"
+				} else if !ToBool(evalArgs[i+1]) && o.Value == "!!" {
+					newBool = "f"
+				}
+				evalArgs[i+1] = globals.Argument{
+					Type:  "boolean",
+					Value: newBool,
+				}
+				if i == 0 {
+					evalArgs = evalArgs[1:]
+				} else {
+					evalArgs = append(evalArgs[:i-1], evalArgs[i+1:]...)
+				}
+			}
+		}
+		i--
+		if i < 0 {
+			break
+		}
+	}
+	i = 0
 	for {
 		o := evalArgs[i]
 		if o.Type == "operator" {
-			var a = evalArgs[i-1]
+			var a = globals.Argument{}
+			if i != 0 {
+				a = evalArgs[i-1]
+			}
 			var b = evalArgs[i+1]
 			var newType = "string"
 			var newVal any
@@ -155,6 +185,77 @@ func CompressArgs(e globals.Expression, condition bool) []globals.Argument {
 					fmt.Printf("\033[31mError:\033[32m Attempted multiplication on non-number type: %s\033[0m\n", a.Type)
 					panic("Bad types")
 				}
+			case "&":
+				newType = "boolean"
+				newVal = ToBool(a) && ToBool(b)
+			case "!&":
+				newType = "boolean"
+				newVal = !(ToBool(a) && ToBool(b))
+			case "|":
+				newType = "boolean"
+				newVal = ToBool(a) || ToBool(b)
+			case "||":
+				newType = "boolean"
+				if ToBool(a) && ToBool(b) {
+					newVal = false
+				} else {
+					newVal = ToBool(a) || ToBool(b)
+				}
+			case "!|":
+				newType = "boolean"
+				newVal = !(ToBool(a) || ToBool(b))
+			case ">":
+				newType = "boolean"
+				if (a.Type == "int" || a.Type == "float") && (b.Type == "int" || b.Type == "float") {
+					aval, _ := strconv.ParseFloat(a.Value, 8)
+					bval, _ := strconv.ParseFloat(b.Value, 8)
+					newVal = aval > bval
+				} else {
+					fmt.Printf("\033[31mError:\033[32m Attempted comparison on non-number type: %s\033[0m\n", a.Type)
+					panic("Bad types")
+				}
+			case "<":
+				newType = "boolean"
+				if (a.Type == "int" || a.Type == "float") && (b.Type == "int" || b.Type == "float") {
+					aval, _ := strconv.ParseFloat(a.Value, 8)
+					bval, _ := strconv.ParseFloat(b.Value, 8)
+					newVal = aval < bval
+				} else {
+					fmt.Printf("\033[31mError:\033[32m Attempted comparison on non-number type: %s\033[0m\n", a.Type)
+					panic("Bad types")
+				}
+			case ">=":
+				newType = "boolean"
+				if (a.Type == "int" || a.Type == "float") && (b.Type == "int" || b.Type == "float") {
+					aval, _ := strconv.ParseFloat(a.Value, 8)
+					bval, _ := strconv.ParseFloat(b.Value, 8)
+					newVal = aval >= bval
+				} else {
+					fmt.Printf("\033[31mError:\033[32m Attempted comparison on non-number type: %s\033[0m\n", a.Type)
+					panic("Bad types")
+				}
+			case "<=":
+				newType = "boolean"
+				if (a.Type == "int" || a.Type == "float") && (b.Type == "int" || b.Type == "float") {
+					aval, _ := strconv.ParseFloat(a.Value, 8)
+					bval, _ := strconv.ParseFloat(b.Value, 8)
+					newVal = aval <= bval
+				} else {
+					fmt.Printf("\033[31mError:\033[32m Attempted comparison on non-number type: %s\033[0m\n", a.Type)
+					panic("Bad types")
+				}
+			case "=":
+				newType = "boolean"
+				newVal = a.Value == b.Value
+			case "==":
+				newType = "boolean"
+				newVal = (a.Value == b.Value) && (a.Type == b.Type)
+			case "!=":
+				newType = "boolean"
+				newVal = (a.Value != b.Value) || (a.Type != b.Type)
+			case "!==":
+				newType = "boolean"
+				newVal = a.Value != b.Value
 			}
 			var stringNewVal = fmt.Sprintf("%s", newVal)
 			switch newType {
@@ -162,6 +263,12 @@ func CompressArgs(e globals.Expression, condition bool) []globals.Argument {
 				stringNewVal = fmt.Sprintf("%d", newVal)
 			case "float":
 				stringNewVal = fmt.Sprintf("%f", newVal)
+			case "boolean":
+				if newVal == true {
+					stringNewVal = "t"
+				} else {
+					stringNewVal = "f"
+				}
 			}
 			if i >= len(evalArgs)-1 {
 				evalArgs = append(evalArgs[:i-1], globals.Argument{

@@ -44,26 +44,28 @@ var Datatypes = []string{
 
 // Variable for storing operators
 var Operators = []string{
-	"+",  // Plus
-	"-",  // Minus
-	"*",  // Times
-	"/",  // Divided by
-	"^",  // To the power of
-	"%",  // Modulus
-	":",  // Child block a:b is the equivalent of a.b in Go.
-	">",  // Greater than
-	"<",  // Less than
-	">=", // Greater than or equal to
-	"<=", // Less than or equal to
-	"=",  // Equal to
-	"!=", // Not equal to
-	"!",  // Not
-	"||", // XOR
-	"|",  // OR
-	"!|", // NOR
-	"&",  // AND
-	"!&", // NAND
-	"**", // Wild card e.g. a ** b returns true if a contains b
+	"+",   // Plus
+	"-",   // Minus
+	"*",   // Times
+	"/",   // Divided by
+	"^",   // To the power of
+	"%",   // Modulus
+	":",   // Child block a:b is the equivalent of a.b in Go.
+	">",   // Greater than
+	"<",   // Less than
+	">=",  // Greater than or equal to
+	"<=",  // Less than or equal to
+	"=",   // Equal to
+	"!=",  // Not equal to
+	"!==", // Not equal to (strict)
+	"!",   // Not
+	"!!",  // Boolean conversion
+	"||",  // XOR
+	"|",   // OR
+	"!|",  // NOR
+	"&",   // AND
+	"!&",  // NAND
+	"**",  // Wild card e.g. a ** b returns true if a contains b
 	"is",
 	"not",
 	"and",
