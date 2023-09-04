@@ -9,9 +9,17 @@ import (
 	"github.com/mariuskressin/dustmound/parser"
 )
 
-func CompressArgs(e globals.Expression) []globals.Argument {
+func CompressArgs(e globals.Expression, condition bool) []globals.Argument {
 	var evalArgs = make([]globals.Argument, 0)
-	for _, a := range e.Args {
+	var arguments = e.Args
+	if condition {
+		arguments = globals.CompressConditions(e.Condition)
+	}
+	if len(arguments) == 0 {
+		return arguments
+	}
+
+	for _, a := range arguments {
 		var expression = a.Expr()
 		var evaluated = globals.Argument{}
 		if expression.Type == "eval" {
