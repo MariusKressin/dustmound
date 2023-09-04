@@ -67,6 +67,7 @@ var Operators = []string{
 	"!&",  // NAND
 	"**",  // Wild card e.g. a ** b returns true if a contains b
 	"is",
+	"isnt",
 	"not",
 	"and",
 	"or",
@@ -74,6 +75,7 @@ var Operators = []string{
 	"ge",
 	"le",
 	"eq",
+	"neq",
 	"lt",
 	"gt",
 }

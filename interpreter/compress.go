@@ -40,10 +40,10 @@ func CompressArgs(e globals.Expression, condition bool) []globals.Argument {
 	i := len(evalArgs) - 1
 	for { // The "not" operator must be handled seperately, because it acts on the following value and can be chained (!!x)
 		o := evalArgs[i]
-		if o.Type == "operator" && (o.Value == "!" || o.Value == "!!") {
+		if o.Type == "operator" && (o.Value == "!" || o.Value == "not" || o.Value == "!!") {
 			if i != len(evalArgs)-1 {
 				newBool := "t"
-				if ToBool(evalArgs[i+1]) && o.Value == "!" {
+				if ToBool(evalArgs[i+1]) && (o.Value == "!" || o.Value == "not") {
 					newBool = "f"
 				} else if !ToBool(evalArgs[i+1]) && o.Value == "!!" {
 					newBool = "f"
@@ -185,26 +185,26 @@ func CompressArgs(e globals.Expression, condition bool) []globals.Argument {
 					fmt.Printf("\033[31mError:\033[32m Attempted multiplication on non-number type: %s\033[0m\n", a.Type)
 					panic("Bad types")
 				}
-			case "&":
+			case "&", "and":
 				newType = "boolean"
 				newVal = ToBool(a) && ToBool(b)
-			case "!&":
+			case "!&", "nand":
 				newType = "boolean"
 				newVal = !(ToBool(a) && ToBool(b))
-			case "|":
+			case "|", "or":
 				newType = "boolean"
 				newVal = ToBool(a) || ToBool(b)
-			case "||":
+			case "||", "xor":
 				newType = "boolean"
 				if ToBool(a) && ToBool(b) {
 					newVal = false
 				} else {
 					newVal = ToBool(a) || ToBool(b)
 				}
-			case "!|":
+			case "!|", "nor":
 				newType = "boolean"
 				newVal = !(ToBool(a) || ToBool(b))
-			case ">":
+			case ">", "gt":
 				newType = "boolean"
 				if (a.Type == "int" || a.Type == "float") && (b.Type == "int" || b.Type == "float") {
 					aval, _ := strconv.ParseFloat(a.Value, 8)
@@ -214,7 +214,7 @@ func CompressArgs(e globals.Expression, condition bool) []globals.Argument {
 					fmt.Printf("\033[31mError:\033[32m Attempted comparison on non-number type: %s\033[0m\n", a.Type)
 					panic("Bad types")
 				}
-			case "<":
+			case "<", "lt":
 				newType = "boolean"
 				if (a.Type == "int" || a.Type == "float") && (b.Type == "int" || b.Type == "float") {
 					aval, _ := strconv.ParseFloat(a.Value, 8)
@@ -224,7 +224,7 @@ func CompressArgs(e globals.Expression, condition bool) []globals.Argument {
 					fmt.Printf("\033[31mError:\033[32m Attempted comparison on non-number type: %s\033[0m\n", a.Type)
 					panic("Bad types")
 				}
-			case ">=":
+			case ">=", "ge":
 				newType = "boolean"
 				if (a.Type == "int" || a.Type == "float") && (b.Type == "int" || b.Type == "float") {
 					aval, _ := strconv.ParseFloat(a.Value, 8)
@@ -234,7 +234,7 @@ func CompressArgs(e globals.Expression, condition bool) []globals.Argument {
 					fmt.Printf("\033[31mError:\033[32m Attempted comparison on non-number type: %s\033[0m\n", a.Type)
 					panic("Bad types")
 				}
-			case "<=":
+			case "<=", "le":
 				newType = "boolean"
 				if (a.Type == "int" || a.Type == "float") && (b.Type == "int" || b.Type == "float") {
 					aval, _ := strconv.ParseFloat(a.Value, 8)
@@ -244,16 +244,16 @@ func CompressArgs(e globals.Expression, condition bool) []globals.Argument {
 					fmt.Printf("\033[31mError:\033[32m Attempted comparison on non-number type: %s\033[0m\n", a.Type)
 					panic("Bad types")
 				}
-			case "=":
+			case "=", "is":
 				newType = "boolean"
 				newVal = a.Value == b.Value
-			case "==":
+			case "==", "eq":
 				newType = "boolean"
 				newVal = (a.Value == b.Value) && (a.Type == b.Type)
-			case "!=":
+			case "!=", "isnt":
 				newType = "boolean"
 				newVal = (a.Value != b.Value) || (a.Type != b.Type)
-			case "!==":
+			case "!==", "neq":
 				newType = "boolean"
 				newVal = a.Value != b.Value
 			}
