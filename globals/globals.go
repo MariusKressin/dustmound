@@ -56,6 +56,7 @@ var Operators = []string{
 	">=",  // Greater than or equal to
 	"<=",  // Less than or equal to
 	"=",   // Equal to
+	"==",  // Equal to (strict)
 	"!=",  // Not equal to
 	"!==", // Not equal to (strict)
 	"!",   // Not
