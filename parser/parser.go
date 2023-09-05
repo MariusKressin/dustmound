@@ -59,8 +59,9 @@ func ParseTokens(tokens []globals.Token) []*globals.Command {
 			if t.Value == "if" {
 				mode = "condition"
 				currentCondition = globals.Condition{
-					Type: "if",
-					Args: make([]globals.Argument, 0),
+					Type:       "if",
+					BlockLevel: BlockLevel + 1,
+					Args:       make([]globals.Argument, 0),
 				}
 			} else if t.Value == "do" {
 				if currentCondition.Type == "if" {
@@ -72,6 +73,24 @@ func ParseTokens(tokens []globals.Token) []*globals.Command {
 					panic("Unexpected \"do\".")
 				}
 			} else if t.Value == "end" {
+				i := 0
+				for {
+					var c = conditions[i]
+					if c.BlockLevel >= BlockLevel {
+						if i == 0 {
+							conditions = conditions[1:]
+						} else if i == len(conditions) {
+							conditions = conditions[:len(conditions)-2]
+						} else {
+							conditions = append(conditions[:i], conditions[i+1:]...)
+						}
+					} else {
+						i++
+					}
+					if i >= len(conditions)-1 {
+						break
+					}
+				}
 				*LevelPtr--
 				if BlockLevel < 0 {
 					panic("Unexpected \"end\".")

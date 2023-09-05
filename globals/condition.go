@@ -1,8 +1,9 @@
 package globals
 
 type Condition struct {
-	Type string
-	Args []Argument
+	Type       string
+	Args       []Argument
+	BlockLevel int
 }
 
 func CompressConditions(conds []Condition) []Argument {
